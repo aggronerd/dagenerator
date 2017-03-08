@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+
+require 'data_generator/generator'
+
+generator = DataGenerator::Generator.from_yaml(File.read(File.dirname(__FILE__) + '/../lib/data_generator/generators/contacts.yml'))
+generator.generate

@@ -1,0 +1,43 @@
+factory: person
+quantity: 5000
+outputs:
+  -
+    filename: Contacts.csv
+    format: csv
+    share: 0.7
+    duplicate_odds: 0.05
+    fields:
+      -
+        type: id
+        label: ID
+      -
+        source: first_name
+        label: First Name
+      -
+        source: last_name
+        label: Surname
+  -
+    filename: Signed up contacts.csv
+    format: csv
+    share: 0.5
+    duplicate_odds: 0.1
+    fields:
+      -
+        type: id
+        label: ID
+      -
+        source: full_name
+        label: Full name
+        mutations:
+          - type: lower_case
+            odds: 0.2
+          - type: typo
+            odds: 0.2
+      -
+        source: mobile_phone_number
+        label: Mobile
+        mutations:
+          -
+            type: may_be
+            source: home_phone_number
+            odds: 0.2
