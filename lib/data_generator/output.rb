@@ -14,6 +14,7 @@ module DataGenerator
       @share = attrs.fetch('share').to_f
       @duplicate_odds = attrs.fetch('duplicate_odds').to_f
       @fields = attrs.fetch('fields').collect { |f| load_field(f) }
+      puts "Writing to #{filename}..."
     end
 
     def push(entity)

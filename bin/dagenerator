@@ -1,6 +1,49 @@
 #!/usr/bin/env ruby
 
+require 'optparse'
 require 'data_generator/generator'
 
-generator = DataGenerator::Generator.from_yaml(File.read(File.dirname(__FILE__) + '/../lib/data_generator/generators/contacts.yml'))
-generator.generate
+def load_yaml(filename)
+  if File.exists?(filename)
+    File.read(filename)
+  else
+    puts 'Error: Cannot find file or preset with that name'
+    exit 2
+  end
+end
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = 'Usage: dagenerator [options]'
+
+  opts.on('-p', '--preset PRESET_NAME', 'Generate data for a preset') { |opt| options[:preset] = opt }
+  opts.on('-f', '--file FILE_NAME', 'Generate data from rules defined in a YAML file') { |opt| options[:file] = opt }
+  opts.on('-l', '--list-presets', 'Lists all presets') { options[:action] = 'list' }
+  opts.on('-P', '--print', 'Prints the YAML for the defined file or preset') { options[:action] = 'print' }
+end.parse!
+
+PRESET_BASE = File.dirname(__FILE__) + '/../lib/data_generator/generators'
+
+if options[:action] == 'list'
+  puts "Preset generation rules:\n"
+  puts Dir.glob("#{PRESET_BASE}/*.yml").collect { |f| "* #{File.basename(f).sub(/\.yml\z/, '')}" }.join("\n")
+  exit 0
+end
+
+if options[:preset]
+  yaml = load_yaml("#{PRESET_BASE}/#{File.basename(options[:preset])}.yml")
+elsif options[:file]
+  yaml = load_yaml(options[:file])
+else
+  puts 'Error: You must specify a preset or a file with rules'
+  exit 1
+end
+
+if options[:action] == 'print'
+  puts yaml
+  exit 0
+else
+  generator = DataGenerator::Generator.from_yaml(yaml)
+  generator.generate
+  exit 0
+end
